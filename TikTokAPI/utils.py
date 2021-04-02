@@ -2,6 +2,14 @@ import random
 import string
 import requests
 import json
+import os
+
+
+proxy_endpoint = os.environ.get('PROXY_ENDPOINT', None)
+if proxy_endpoint:
+    proxies = {'http': 'http://{}'.format(proxy_endpoint), 'https': 'https://{}'.format(proxy_endpoint)}
+else:
+    proxies = None
 
 
 def random_key(length):
@@ -25,19 +33,19 @@ def build_get_url(base_url, params, append=False):
 
 def get_req_json(url, params=None, headers=None):
     headers["Host"] = url.split("/")[2]
-    r = requests.get(url, params=params, headers=headers)
+    r = requests.get(url, params=params, headers=headers, proxies=proxies)
     return json.loads(r.text)
 
 
 def get_req_content(url, params=None, headers=None):
     headers["Host"] = url.split("/")[2]
-    r = requests.get(url, params=params, headers=headers)
+    r = requests.get(url, params=params, headers=headers, proxies=proxies)
     return r.content
 
 
 def get_req_text(url, params=None, headers=None):
     headers["Host"] = url.split("/")[2]
-    r = requests.get(url, params=params, headers=headers)
+    r = requests.get(url, params=params, headers=headers, proxies=proxies)
     return r.text
 
 

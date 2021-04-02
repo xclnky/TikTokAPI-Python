@@ -17,6 +17,11 @@ class TikTokBrowser:
             "--ignore-certifcate-errors-spki-list",
             "--user-agent=" + self.userAgent,
         ]
+
+        proxy_endpoint = os.environ.get('PROXY_ENDPOINT', None)
+        if proxy_endpoint:
+            self.args.append("--proxy-server=https://{}".format(proxy_endpoint))
+
         self.options = {
             'args': self.args,
             'headless': True,
