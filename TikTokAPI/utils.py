@@ -6,10 +6,10 @@ import os
 
 
 proxy_endpoint = os.environ.get('PROXY_ENDPOINT', None)
-if proxy_endpoint:
-    proxies = {'http': 'http://{}'.format(proxy_endpoint), 'https': 'https://{}'.format(proxy_endpoint)}
-else:
-    proxies = None
+if proxy_endpoint is None:
+    raise ValueError('please set PROXY_ENDPOINT')
+
+proxies = {'http': 'http://{}'.format(proxy_endpoint), 'https': 'https://{}'.format(proxy_endpoint)}
 
 
 def random_key(length):
