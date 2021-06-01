@@ -1,6 +1,6 @@
 import os
 import asyncio
-from pyppeteer import launch
+from pyppeteer import launcher
 from .utils import python_list2_web_list
 
 
@@ -56,10 +56,17 @@ class TikTokBrowser:
         self.tiktok_dummy_page = "file://" + os.path.join(parent_folder, "website", "tiktok.html")
 
     def fetch_auth_params(self, url, language='en'):
+        # If not running in the main thread, it's necessary to create & set a
+        # new event loop.
+        try:
+            asyncio.get_event_loop()
+        except RuntimeError:
+            asyncio.set_event_loop(asyncio.new_event_loop())
         return asyncio.get_event_loop().run_until_complete(self.async_fetch_auth_params(url, language))
 
     async def async_fetch_auth_params(self, url, language):
-        browser = await launch(self.options)
+        pplauncher = launcher.Launcher(self.options)
+        browser = await pplauncher.launch()
         page = await browser.newPage()
 
         await page.evaluateOnNewDocument("""() => {
@@ -85,5 +92,7 @@ class TikTokBrowser:
                 return token;
             }''')
 
+        await page.close()
         await browser.close()
+        await pplauncher.killChrome()
         return signature
