@@ -6,7 +6,7 @@ from .utils import python_list2_web_list
 
 class TikTokBrowser:
 
-    def __init__(self, user_agent):
+    def __init__(self, user_agent, proxy_endpoint=None):
         self.userAgent = user_agent
         self.args = [
             "--no-sandbox",
@@ -18,7 +18,6 @@ class TikTokBrowser:
             "--user-agent=" + self.userAgent,
         ]
 
-        proxy_endpoint = os.environ.get('PROXY_ENDPOINT', None)
         if proxy_endpoint:
             self.args.append("--proxy-server=https://{}".format(proxy_endpoint))
 

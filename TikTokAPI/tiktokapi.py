@@ -1,8 +1,7 @@
-import os
 import string
 import random
 import urllib.parse
-from .utils import random_key, build_get_url, get_req_json, get_req_content, get_req_text
+from .utils import build_get_url, get_req_json, get_req_content, get_req_text
 from .tiktok_browser import TikTokBrowser
 
 
@@ -12,7 +11,7 @@ class VideoException(Exception):
 
 class TikTokAPI(object):
 
-    def __init__(self, cookie=None, language='en', browser_lang="en-US", timezone="Asia/Kolkata", region='IN'):
+    def __init__(self, cookie=None, language='en', browser_lang="en-US", timezone="Asia/Kolkata", region='IN', proxy_endpoint=None):
         self.base_url = "https://t.tiktok.com/api"
         self.user_agent = "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:79.0) Gecko/20100101 Firefox/79.0"
 
@@ -65,7 +64,9 @@ class TikTokAPI(object):
         }
         self.signature_key = "_signature"
         self.did_key = "did"
-        self.tiktok_browser = TikTokBrowser(self.user_agent)
+
+        self.proxy_endpoint = proxy_endpoint
+        self.tiktok_browser = TikTokBrowser(self.user_agent, self.proxy_endpoint)
 
     def send_get_request(self, url, params, extra_headers=None):
         url = build_get_url(url, params)
@@ -81,7 +82,7 @@ class TikTokAPI(object):
                 headers[key] = val
             for key, val in self.headers.items():
                 headers[key] = val
-        data = get_req_json(url, params=None, headers=self.headers)
+        data = get_req_json(url, params=None, headers=self.headers, proxy_endpoint=self.proxy_endpoint)
         return data
 
     def getTrending(self, count=30):
@@ -238,14 +239,14 @@ class TikTokAPI(object):
     def downloadVideoById(self, video_id, save_path):
         video_info = self.getVideoById(video_id)
         video_url = video_info["itemInfo"]["itemStruct"]["video"]["playAddr"]
-        video_data = get_req_content(video_url, params=None, headers=self.headers)
+        video_data = get_req_content(video_url, params=None, headers=self.headers, proxy_endpoint=self.proxy_endpoint)
         with open(save_path, 'wb') as f:
             f.write(video_data)
 
     def downloadVideoByIdNoWatermark(self, video_id, save_path):
         video_info = self.getVideoById(video_id)
         video_url = video_info["itemInfo"]["itemStruct"]["video"]["downloadAddr"]
-        video_data = get_req_text(video_url, params=None, headers=self.headers)
+        video_data = get_req_text(video_url, params=None, headers=self.headers, proxy_endpoint=self.proxy_endpoint)
         pos = video_data.find("vid:")
         if pos == -1:
             raise VideoException("Video without watermark not available in new videos")
@@ -253,6 +254,6 @@ class TikTokAPI(object):
                           "}&vr_type=0&is_play_url=1&source=PackSourceEnum_PUBLISH&media_type=4" \
             .format(video_data[pos + 4:pos + 36])
 
-        video_data_no_wm = get_req_content(video_url_no_wm, params=None, headers=self.headers)
+        video_data_no_wm = get_req_content(video_url_no_wm, params=None, headers=self.headers, proxy_endpoint=self.proxy_endpoint)
         with open(save_path, 'wb') as f:
             f.write(video_data_no_wm)

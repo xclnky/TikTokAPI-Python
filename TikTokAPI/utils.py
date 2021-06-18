@@ -2,14 +2,6 @@ import random
 import string
 import requests
 import json
-import os
-
-
-proxy_endpoint = os.environ.get('PROXY_ENDPOINT', None)
-if proxy_endpoint is None:
-    raise ValueError('please set PROXY_ENDPOINT')
-
-proxies = {'http': 'http://{}'.format(proxy_endpoint), 'https': 'https://{}'.format(proxy_endpoint)}
 
 
 def random_key(length):
@@ -31,19 +23,22 @@ def build_get_url(base_url, params, append=False):
     return final_url
 
 
-def get_req_json(url, params=None, headers=None):
+def get_req_json(url, params=None, headers=None, proxy_endpoint=None):
+    proxies = {'http': 'http://{}'.format(proxy_endpoint), 'https': 'https://{}'.format(proxy_endpoint)} if proxy_endpoint else None
     headers["Host"] = url.split("/")[2]
     r = requests.get(url, params=params, headers=headers, proxies=proxies)
     return json.loads(r.text)
 
 
-def get_req_content(url, params=None, headers=None):
+def get_req_content(url, params=None, headers=None, proxy_endpoint=None):
+    proxies = {'http': 'http://{}'.format(proxy_endpoint), 'https': 'https://{}'.format(proxy_endpoint)} if proxy_endpoint else None
     headers["Host"] = url.split("/")[2]
     r = requests.get(url, params=params, headers=headers, proxies=proxies)
     return r.content
 
 
-def get_req_text(url, params=None, headers=None):
+def get_req_text(url, params=None, headers=None, proxy_endpoint=None):
+    proxies = {'http': 'http://{}'.format(proxy_endpoint), 'https': 'https://{}'.format(proxy_endpoint)} if proxy_endpoint else None
     headers["Host"] = url.split("/")[2]
     r = requests.get(url, params=params, headers=headers, proxies=proxies)
     return r.text
