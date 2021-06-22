@@ -93,5 +93,6 @@ class TikTokBrowser:
 
         await page.close()
         await browser.close()
+        browser.process.communicate()
         await pplauncher.killChrome()
         return signature
