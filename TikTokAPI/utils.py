@@ -26,21 +26,21 @@ def build_get_url(base_url, params, append=False):
 def get_req_json(url, params=None, headers=None, proxy_endpoint=None):
     proxies = {'http': 'http://{}'.format(proxy_endpoint), 'https': 'https://{}'.format(proxy_endpoint)} if proxy_endpoint else None
     headers["Host"] = url.split("/")[2]
-    r = requests.get(url, params=params, headers=headers, proxies=proxies)
+    r = requests.get(url, params=params, headers=headers, proxies=proxies, verify=False)
     return json.loads(r.text)
 
 
 def get_req_content(url, params=None, headers=None, proxy_endpoint=None):
     proxies = {'http': 'http://{}'.format(proxy_endpoint), 'https': 'https://{}'.format(proxy_endpoint)} if proxy_endpoint else None
     headers["Host"] = url.split("/")[2]
-    r = requests.get(url, params=params, headers=headers, proxies=proxies)
+    r = requests.get(url, params=params, headers=headers, proxies=proxies, verify=False)
     return r.content
 
 
 def get_req_text(url, params=None, headers=None, proxy_endpoint=None):
     proxies = {'http': 'http://{}'.format(proxy_endpoint), 'https': 'https://{}'.format(proxy_endpoint)} if proxy_endpoint else None
     headers["Host"] = url.split("/")[2]
-    r = requests.get(url, params=params, headers=headers, proxies=proxies)
+    r = requests.get(url, params=params, headers=headers, proxies=proxies, verify=False)
     return r.text
 
 
